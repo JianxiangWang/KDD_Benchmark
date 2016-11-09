@@ -3,7 +3,6 @@
 ## Benchmark 程序
 
 ### 一、程序使用python27进行开发，需要安装以下包：
-
 * numpy
 * sklearn
 * pandas
@@ -195,8 +194,46 @@ TEST\_FILE 变量对应的测试文件，抽取特征，并使用在训练集上
 ####3. 提交格式：
 最后，提交的文件为对“测试集”的预测结果。预测结果文件的格式与训练集的格式相同，包含AuthorId、ComfirmedPaperIds、DeletedPaperIds 字段。
 
-####3. 评估标准：
+####4. 评估标准：
 使用在“测试集”上的准确率Accuracy，作为最后的评估标准。
+
+
+## IDEAs
+
+####1. 字符串距离 
+首先在paperauthor里面是又噪音的，同一个（authorid,paperid）可能出现多次，我做的是把同一个（authorid,paperid）对的多个name和多个affiliation合并起来。例如
+
+ aid,pid,name1,aff1 <br/>
+ aid,pid,name2,aff2 <br/>
+ aid,pid,name3,aff3 <br/>
+ 
+得到aid,pid,name1##name2##name3,aff1##aff2##aff3,“##”为分隔符。由paperauthor里可以知道论文的name和affiliation，另一个方面我们可以根据（authorid,paperid）对中的authorid到author表里找到对应的name和affiliation，假设当前的作者论文对是(aid,pid),从paperauthor里得到的name串和affiliation串分别为name1##name2##name3,aff1##aff2##aff3,根据aid从author表找到的name和affliction分别为name-a，affliction-a，这样我们可以算字符串的距离。
+
+算法有两种：
+
+*  name-a 与,name1##name2##name3的距离，同理affliction-a和,aff1##aff2##aff3的距离
+*  name-a分别与name1，name2，name3的距离，然后取平均，同理affliction-a和,aff1，aff2，aff3的平均距离
+距离的度量：编辑距离（levenshtein distance），最长公共子序列（LCS），最长公共子串（LSS）。
+这样我们就得到关于作者name和作者affiliation的字符串相似度的多个特征。
+
+####2. coauthor信息
+很多论文都有多个作者，根据paperauthor统计每一个作者的top 10（当然可以是top 20或者其他top K）的coauthor，对于一个作者论文对（aid，pid），计算ID为pid的论文的作者有没有出现ID为aid的作者的top 10 coauthor中，可以简单计算top 10 coauthor出现的个数，还可以算一个得分，每个出现pid论文的top 10 coauthor可以根据他们跟aid作者的合作次数算一个分数，然后累加。
+
+####3. journalid，conferenceid，year
+把paper表的journalid，conferenceid和year也作为特征加进去，我的理解journalid和conferenceid可以看做是论文的一个类标签（label），年份year也可以看做是一个label。
+
+####4. keyword信息
+作者A写过的论文的keyword构成一个集合X，一篇论文B的keyword构成一个集合Y，这里说的keyword是论文的title和keyword分词后得到的单词，对于一个作者论文对（A，B）计算他们的keyword的交集：X∩Y。
+每个单词可以类似tf-idf的分数，最后把属于X∩Y的单词的分数累加起来作为一维新的特征。
+
+####5.其他
+后面做了一下model的ensemble。把knn，svm，sgd分类器，rf随机森林，gbdt，logistic regression，adaboost的结果合并。
+
+
+
+
+
+
 
 
 
