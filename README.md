@@ -1,6 +1,8 @@
-# KDD Benchmark
+# KDD 数据挖掘大作业
 
-#### 一、程序使用python27进行开发，需要安装以下包：
+## Benchmark 程序
+
+### 一、程序使用python27进行开发，需要安装以下包：
 
 * numpy
 * sklearn
@@ -8,15 +10,22 @@
 
 	建议通过安装 [Anaconda2](https://www.continuum.io/downloads "anaconda2") 来获得python27 以及上面相关的包。
 	
-#### 二、运行方式：
-1. 修改配置文件config.py中的CWD变量的值，将其改成当前项目所在的目录，如：
+### 二、运行方式：
+
+1. 下载data数据，放到项目根目录下:
+
+	```
+	链接: https://pan.baidu.com/s/1qY6K7EW 密码: wh12
+	```
+
+2. 修改配置文件config.py中的CWD变量的值，将其改成当前项目所在的目录，如：
 	
 	```
 	#当前工作目录 
 	CWD = "/home/jianxiang/pycharmSpace/KDD_benchmark"
 	
 	``` 
-2. 进入model_trainer文件夹，使用以下命令运行程序：
+3. 进入model_trainer文件夹，使用以下命令运行程序：
 
 	```
 	python trainer.py
@@ -38,7 +47,7 @@ TEST\_FILE 变量对应的测试文件，抽取特征，并使用在训练集上
 	TEST_PREDICT_PATH = CWD + "/predict/test.predict"
 	```
 	
-3. 获取评估结果
+4. 获取评估结果
 
 	使用下面的命令获取评估结果，accuracy为最终的评估标准。
 	
@@ -49,7 +58,7 @@ TEST\_FILE 变量对应的测试文件，抽取特征，并使用在训练集上
 	gold\_file\_path 为标准答案所在的路径，pred\_file\_path 为预测文件所在的路径
 	
 	
-#### 三、目录介绍
+### 三、目录介绍
 
 
 > data: 数据目录
@@ -116,6 +125,85 @@ TEST\_FILE 变量对应的测试文件，抽取特征，并使用在训练集上
 >README.md: 说明文件
 
 >util.py: 小工具类
+
+
+
+## 任务介绍
+####1. 目标：给定作者ID和论文ID，判断该作者是否写了这篇论文。
+
+
+####2. 数据集描述：
+
+1. 作者数据集: **Author.csv**。包含作者的编号（Id），名字（Name），隶属单位（affliation）信息。相同的作者可能在Author.csv数据集中出现多次，因为作者在不同会议／期刊上发表的论文，其名字可能有多个版本。例如：J. Doe, Jane Doe, 和 J. A. Doe 指的均是同一个人。
+
+	|  字段名称 | 数据类型  | 注释 |
+	|:--------------	|:-----------| ----------:|
+	| Id				| int			|    作者编号 |
+	| Name				| string		|    作者名称 |
+	| Affiliation		| string     	|    隶属单位 |
+
+
+2. 论文数据集: **Paper.csv**。包含论文的标题(title), 会议／期刊信息, 关键字(keywords)。相同的论文，可能会通过不同的数据来源获取，因此，在Paper.csv中会存在多个副本。
+
+	|  字段名称 | 数据类型  | 注释 |
+	|:--------------	|:-----------|:----------|
+	| Id				| int			|    论文编号 |
+	| Title			| string		|    论文标题 |
+	| Year				| int     	|    论文年份 |
+	| ConferrenceId	| int     	|    论文发表的会议Id |
+	| JournalId		| int     	|    论文发表的期刊Id |
+	| Keywords		| string     	|    关键字|
+	
+3. (论文-作者)数据集: **Paper-Author.csv**。包含 (论文Id-作者Id)对 的信息。该数据集是包含噪声的(noisy)，存在不正确的(论文Id-作者Id)对。也就是说，在Paper-Author.csv中的(论文Id-作者Id)，该作者Id并不一定写了该论文Id。因为，作者名字存在歧义（存在同名的人），和作者名字存在多个版本（如上面的例子：J. Doe, Jane Doe, 和 J. A. Doe 指的均是同一个人）。
+
+
+	|  字段名称 		| 数据类型		| 注释       |
+	|:--------------	|:-----------| ----------:|
+	| PaperId			| int			|    论文编号 |
+	| AuthorId		| int			|    作者编号 |
+	| Name				| string		|    作者名称 |
+	| Affiliation		| string     	|    隶属单位 |
+	
+
+4. 由于每篇论文要么发表在会议上，要么发表在期刊上。因此，这里提供关于会议和期刊的信息：**Conference.csv**, **Journal.csv** 
+
+	|  字段名称 		| 数据类型		| 注释       |
+	|:--------------	|:-----------| :----------|
+	| Id				| int			|    会议／期刊 编号 |
+	| ShortName		| string		|    简称|
+	| Fullname		| string		|    全称 |
+	| Homepage		| string     	|    主页 |
+	
+5. 训练集, **Train.csv**。ComfirmedPaperIds列对应的论文，表示该作者写了这些论文。DeletedPaperIds列对应的论文，表示该作者没有写这些论文。目前，已给出验证集（Valid.csv）的标准答案：**Valid.gold.csv**。Valid.gold.csv文件的格式与Train.csv格式相同。
+
+	|  字段名称 		| 数据类型		| 注释       |
+	|:--------------	|:-----------| :----------|
+	| AuthorId		| int		   |      作者ID|
+	| ComfirmedPaperIds		| string		|    以空格分割的论文(PaperId) 列表|
+	| DeletedPaperIds		| string		|    以空格分割的论文(PaperId) 列表 |
+	
+	
+
+6. 验证集和测试集，**Valid.csv, Test.csv**。测试集Test.csv，将在之后发布。格式如下：
+	
+	|  字段名称 		| 数据类型		| 注释       |
+	|:--------------	|:-----------| :----------|
+	| AuthorId		| int		   |      作者ID|
+	| PaperIds		| string		|    以空格分割的论文(PaperId) 列表，待测的论文列表|
+	
+
+####3. 提交格式：
+最后，提交的文件为对“测试集”的预测结果。预测结果文件的格式与训练集的格式相同，包含AuthorId、ComfirmedPaperIds、DeletedPaperIds 字段。
+
+####3. 评估标准：
+使用在“测试集”上的准确率Accuracy，作为最后的评估标准。
+
+
+
+
+
+
+
 	
 	
 	
