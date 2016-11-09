@@ -22,7 +22,6 @@
 	```
 	#当前工作目录 
 	CWD = "/home/jianxiang/pycharmSpace/KDD_benchmark"
-	
 	``` 
 3. 进入model_trainer文件夹，使用以下命令运行程序：
 
@@ -37,7 +36,6 @@ TEST\_FILE 变量对应的测试文件，抽取特征，并使用在训练集上
 	# 训练和测试文件
 	TRAIN_FILE = DATASET_PATH + "/train_set/Train.csv"
 	TEST_FILE = DATASET_PATH + "/valid_set/Valid.csv"
-
 	```
 	
 	模型对测试集的预测结果文件，对应于config.py的TEST\_PREDICT\_PATH变量所指的文件。
