@@ -6,6 +6,7 @@
 * numpy
 * sklearn
 * pandas
+* pyprind (用于显示进度条。位于make_feature_file.py中，用于显示抽取特征的进度，不需要的同学可以注射掉相应的行)
 
 	建议通过安装 [Anaconda2](https://www.continuum.io/downloads "anaconda2") 来获得python27 以及上面相关的包。
 	
@@ -190,7 +191,7 @@ TEST\_FILE 变量对应的测试文件，抽取特征，并使用在训练集上
 	
 
 ####3. 提交格式：
-最后，提交的文件为对“测试集”的预测结果。预测结果文件的格式与训练集的格式相同，包含AuthorId、ComfirmedPaperIds、DeletedPaperIds 字段。
+最终提交的的文件为对**“测试集”**的预测结果。预测结果文件的格式与训练集的格式相同，包含AuthorId、ComfirmedPaperIds、DeletedPaperIds 字段。
 
 ####4. 评估标准：
 使用在“测试集”上的准确率Accuracy，作为最后的评估标准。
