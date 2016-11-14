@@ -6,7 +6,7 @@
 * [numpy](http://www.numpy.org/)
 * [sklearn](http://scikit-learn.org/stable/)
 * [pandas](http://pandas.pydata.org/)
-* [pyprind](https://pypi.python.org/pypi/PyPrind): 用于显示进度条。位于make_feature_file.py中，用于显示抽取特征的进度，不需要的同学可以注射掉相应的行)
+* [pyprind](https://pypi.python.org/pypi/PyPrind): 用于显示进度条。位于make_feature_file.py中，用于显示抽取特征的进度，不需要的同学可以注释掉相应的行)
 
  建议通过安装 [Anaconda2](https://www.continuum.io/downloads "anaconda2") 来获得python27 以及上面相关的包。
 	
