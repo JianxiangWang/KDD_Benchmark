@@ -122,6 +122,9 @@ def stringDistance_2(AuthorIdPaperId, dict_coauthor, dict_paperIdAuthorId_to_nam
 
     feat_list += [np.mean(lcs_distance), np.mean(lss_distance), np.mean(lev_distance)]
 
+    # # feat_list
+    # feat_list = [feat_list[0],feat_list[1], feat_list[3],feat_list[4]]
+
     return util.get_feature_by_list(feat_list)
 
 

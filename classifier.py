@@ -1,11 +1,12 @@
 #coding:utf-8
 import os, config
 from sklearn.datasets import load_svmlight_file
-from sklearn import svm
+from sklearn import svm, tree
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import VotingClassifier
 from sklearn.linear_model import LogisticRegression
+from sklearn.naive_bayes import GaussianNB
 from sklearn.neighbors import KNeighborsClassifier
 
 
@@ -28,6 +29,56 @@ class Classifier(object):
 
 
 ''' skLearn '''
+
+class skLearn_DecisionTree(Strategy):
+    def __init__(self):
+        self.trainer = "skLearn decisionTree"
+        self.clf = tree.DecisionTreeClassifier()
+        print("Using %s Classifier" % (self.trainer))
+
+    def train_model(self, train_file_path, model_path):
+        train_X, train_y = load_svmlight_file(train_file_path)
+
+        print("==> Train the model ...")
+        self.clf.fit(train_X, train_y)
+
+
+    def test_model(self, test_file_path, model_path, result_file_path):
+
+        print("==> Test the model ...")
+        test_X, test_y = load_svmlight_file(test_file_path)
+        pred_y = self.clf.predict(test_X)
+
+        # write prediction to file
+        with open(result_file_path, 'w') as fout:
+            fout.write("\n".join(map(str, map(int, pred_y))))
+
+
+class skLearn_NaiveBayes(Strategy):
+    def __init__(self):
+        self.trainer = "skLearn NaiveBayes"
+        self.clf = GaussianNB()
+        print("Using %s Classifier" % (self.trainer))
+
+    def train_model(self, train_file_path, model_path):
+        train_X, train_y = load_svmlight_file(train_file_path)
+
+        train_X = train_X.toarray()
+        print("==> Train the model ...")
+        self.clf.fit(train_X, train_y)
+
+
+    def test_model(self, test_file_path, model_path, result_file_path):
+
+        print("==> Test the model ...")
+        test_X, test_y = load_svmlight_file(test_file_path)
+        test_X = test_X.toarray()
+        pred_y = self.clf.predict(test_X)
+
+        # write prediction to file
+        with open(result_file_path, 'w') as fout:
+            fout.write("\n".join(map(str, map(int, pred_y))))
+
 class skLearn_svm(Strategy):
     def __init__(self):
         self.trainer = "skLearn svm"
@@ -177,6 +228,8 @@ class sklearn_VotingClassifier(Strategy):
         # write prediction to file
         with open(result_file_path, 'w') as fout:
             fout.write("\n".join(map(str, map(int, pred_y))))
+
+
 
 
 if __name__ == "__main__":

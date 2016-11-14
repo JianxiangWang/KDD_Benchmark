@@ -30,3 +30,8 @@ def Make_feature_file(authorIdPaperIds, dict_coauthor, dict_paperIdAuthorId_to_n
         example_list.append(example)
 
     util.write_example_list_to_file(example_list, to_file)
+    # to arff file
+    util.write_example_list_to_arff_file(example_list, dimension, to_file+".arff")
+
+
+

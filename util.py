@@ -76,3 +76,38 @@ def mergeFeatures(feature_list, name = ""):
 def write_example_list_to_file(example_list, to_file):
     with open(to_file, "w") as fout:
         fout.write("\n".join([example.content + " # " + example.comment for example in example_list]))
+
+
+def write_example_list_to_arff_file(example_list, dimension, to_file):
+    with open(to_file, "w") as fout:
+        out_lines = []
+
+        out_lines.append("@relation kdd")
+        out_lines.append("")
+        for i in range(dimension):
+            out_lines.append("@attribute attribution%d numeric" % (i+1))
+        out_lines.append("@attribute class {0, 1}")
+
+        out_lines.append("")
+        out_lines.append("@data")
+
+        for example in example_list:
+            feature_list = [0.0] * dimension
+            s = example.content.split(" ")
+            target = s[0]
+            for item in s[1:]:
+                if item == "":
+                    continue
+                k, v = int(item.split(":")[0]) - 1, float(item.split(":")[1])
+                feature_list[k] = v
+
+            feature = ",".join(map(str, feature_list))
+
+            out_lines.append("%s,%s" % (feature, target))
+
+        fout.write("\n".join(out_lines))
+
+
+if __name__ == '__main__':
+    s  = "0 ".split(" ")
+    print s

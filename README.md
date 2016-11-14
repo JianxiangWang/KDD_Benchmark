@@ -3,10 +3,10 @@
 ## Benchmark 程序
 
 ### 一、程序使用python27进行开发，需要安装以下包：
-* numpy
-* sklearn
-* pandas
-* pyprind (用于显示进度条。位于make_feature_file.py中，用于显示抽取特征的进度，不需要的同学可以注射掉相应的行)
+* [numpy](http://www.numpy.org/)
+* [sklearn](http://scikit-learn.org/stable/)
+* [pandas](http://pandas.pydata.org/)
+* [pyprind](https://pypi.python.org/pypi/PyPrind): 用于显示进度条。位于make_feature_file.py中，用于显示抽取特征的进度，不需要的同学可以注射掉相应的行)
 
  建议通过安装 [Anaconda2](https://www.continuum.io/downloads "anaconda2") 来获得python27 以及上面相关的包。
 	
@@ -195,6 +195,34 @@ TEST\_FILE 变量对应的测试文件，抽取特征，并使用在训练集上
 
 ####4. 评估标准：
 使用在“测试集”上的准确率Accuracy，作为最后的评估标准。
+
+目前，程序该benchmark程序在Valid数据集上的结果如下：
+
+
+|  分类器	   | Accuracy on Valid set|
+|:-----------|:---------------------| 
+| LogisterRegreation	   | 0.920277		             |     
+| SVM		   | 		          |   
+| KNN		   | 		          |   
+
+大家可以尝试不同的算法，目前系统已经实现如下算法：
+
+* SVM
+* LogisterRegreation
+* KNN
+* RandomForest
+* AdaBoost
+* VotingClassifier（ensemble）
+ 
+ 
+ 
+####5. 数据集统计
+
+| 数据集  		| (作者-论文)对 个数 |
+|:-----------|:---------------------| 
+| 训练集（Train.csv）	   | 11,263                |     
+| 验证集（Valid.csv）	   | 2,347		          |   
+| 测试集（Test.csv）	   | 每个队伍的测试集不同, 约1,300; |   
 
 
 ## IDEAs

@@ -57,13 +57,16 @@ if __name__ == "__main__":
     feature_function_list = [
         coauthor_1,
         coauthor_2,
-        stringDistance_1,
-        stringDistance_2,
+        # stringDistance_1,
+        # stringDistance_2,
     ]
 
     ''' 分类器 '''
+    # 决策树，NB，
+    # classifier = Classifier(skLearn_DecisionTree())
+    classifier = Classifier(skLearn_NaiveBayes())
     # classifier = Classifier(skLearn_svm())
-    classifier = Classifier(skLearn_lr())
+    # classifier = Classifier(skLearn_lr())
     # classifier = Classifier(skLearn_KNN())
     # classifier = Classifier(sklearn_RandomForestClassifier())
     # classifier = Classifier(skLearn_AdaBoostClassifier())
@@ -95,7 +98,7 @@ if __name__ == "__main__":
     print "data is loaded..."
 
     # 为训练和测试数据，抽取特征，分别生成特征文件
-    trainer.make_feature_file(train_AuthorIdPaperIds, test_AuthorIdPaperIds, dict_coauthor, dict_paperIdAuthorId_to_name_aff, PaperAuthor, Author)
+    # trainer.make_feature_file(train_AuthorIdPaperIds, test_AuthorIdPaperIds, dict_coauthor, dict_paperIdAuthorId_to_name_aff, PaperAuthor, Author)
     # 根据训练特征文件，训练模型
     trainer.train_mode()
     # 使用训练好的模型，对测试集进行预测
