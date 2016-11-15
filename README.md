@@ -18,7 +18,7 @@
 	链接: https://pan.baidu.com/s/1qY6K7EW 密码: wh12
 	```
 
-2. 修改配置文件config.py中的CWD变量的值，将其改成当前项目所在的目录，如：
+2. 修改配置文件config.py中的CWD（Current Working Directory）变量的值，将其改成当前项目所在的目录，如：
 	
 	```
 	#当前工作目录 
