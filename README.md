@@ -35,14 +35,14 @@ TEST\_FILE 变量对应的测试文件，抽取特征，并使用在训练集上
 
 	```
 	# 训练和测试文件
-	TRAIN_FILE = DATASET_PATH + "/train_set/Train.csv"
-	TEST_FILE = DATASET_PATH + "/valid_set/Valid.csv"
+	TRAIN_FILE = os.path.join(DATASET_PATH, "train_set", "Train.csv")
+	TEST_FILE = os.path.join(DATASET_PATH, "valid_set", "Valid.csv")
 	```
 	
 	模型对测试集的预测结果文件，对应于config.py的TEST\_PREDICT\_PATH变量所指的文件。
 	
 	```
-	TEST_PREDICT_PATH = CWD + "/predict/test.predict"
+	TEST_PREDICT_PATH = os.path.join(CWD, "predict", "test.predict")
 	```
 	
 4. 评估脚本
