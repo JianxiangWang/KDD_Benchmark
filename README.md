@@ -45,9 +45,9 @@ TEST\_FILE 变量对应的测试文件，抽取特征，并使用在训练集上
 	TEST_PREDICT_PATH = CWD + "/predict/test.predict"
 	```
 	
-4. 获取评估结果
+4. 评估脚本
 
-	使用下面的命令获取评估结果，**accuracy** 为最终的评估标准。
+	使用下面的命令获取评估结果，**Accuracy** 为最终的评估标准。
 	
 	```
 		python evalution.py gold_file_path pred_file_path
@@ -247,13 +247,22 @@ TEST\_FILE 变量对应的测试文件，抽取特征，并使用在训练集上
 ####4. 评估标准：
 使用在“测试集”上的准确率 **Accuracy**，作为最后的评估标准。
  
+评估脚本位于model\_trainer文件夹下，名为 evalution.py，通过运行该脚本可以获得评估结果。
+	
+```
+python evalution.py gold_file_path pred_file_path
+```
+其中，gold\_file\_path 为标准答案所在的路径，pred\_file\_path 为预测文件所在的路径
 
-大家可以尝试不同的算法，目前系统已经实现如下算法：
 
-* SVM
-* LogisterRegreation
+大家可以尝试不同的特征和不同的算法来提升性能，目前系统已经实现如下算法：
+
+* Decision Tree
+* Naive Bayes
 * KNN
-* RandomForest
+* SVM
+* Logister Regreation
+* Random Forest
 * AdaBoost
 * VotingClassifier（ensemble）
  
