@@ -47,7 +47,7 @@ TEST\_FILE 变量对应的测试文件，抽取特征，并使用在训练集上
 	
 4. 获取评估结果
 
-	使用下面的命令获取评估结果，accuracy为最终的评估标准。
+	使用下面的命令获取评估结果，**accuracy** 为最终的评估标准。
 	
 	```
 		python evalution.py gold_file_path pred_file_path
@@ -189,21 +189,64 @@ TEST\_FILE 变量对应的测试文件，抽取特征，并使用在训练集上
 	| AuthorId		| int		   |      作者ID|
 	| PaperIds		| string		|    以空格分割的论文(PaperId) 列表，待测的论文列表|
 	
+	
+7. **coauthor.json**, 从 Paper-Author.csv 中抽取的共同作者的信息。该文件可以通过运行 model_trainer 下的 coauthor.py 来获取。
+	
+	```
+	python coauthor.py
+	```
+	目前，coauthor.json存取的是每个作者合作频率最高的10个共同作者。可以通过修改coauthor.py 中 get\_top\_k\_coauthors (paper\_author\_path, k, to\_file)方法的 **k** 值来获取top k 的共同作者：
+	
+	```
+	k = 10
+    get_top_k_coauthors(
+        os.path.join(config.DATASET_PATH, "PaperAuthor.csv"),
+        k,
+        os.path.join(config.DATA_PATH, "coauthor.json"))
+	```
+	
+	coauthor.json的内容格式形如：
+	
+	```
+	{"A作者ID": {"B1作者ID": 合作次数, "B2作者ID": 合作次数}}
+	```
+	
+	第一层的key为作者的ID，对应的value为共同作者信息（同样为key-value形式，key为共同作者的ID，value为合作次数）。
+	
+	例如，获取作者ID为 ‘742736’ 的共同作者信息，可以通过以下代码获取，coauthor["742736"] 值对应的是ID为 ‘742736’ 作者的共同作者信息。```u'823230': 3``` 表示 ID为 ‘742736’ 的作者 和 ID为 ‘823230’ 的作者共合作过 3 次：
+	
+	```
+	>>> import json
+	>>> coauthor = json.load(open("coauthour.json"))
+	>>> coauthor["742736"]
+	{u'823230': 3, u'647433': 3, u'1691202': 3, u'891164': 3, 		u'1910552': 3, u'607259': 3, u'2182818': 7, u'1355775': 4, 		u'2097154': 3, u'1108518': 3}
+		
+	```
+	
+8. **paperIdAuthorId\_to\_name\_and\_affiliation.json**, 存储的是 **IDEAs** 下 **1. 字符串距离** 中描述的信息。该文件可以通过运行 model\_trainer 下的 stringDistance.py 来获取：
+
+	```
+	python stringDistance.py
+	```
+	
+	文件内容为key-value形式，key 为论文Id和作者ID的pair对：'paperid|authorid', value为 ```{"name": "name1##name2##name3", "affiliation": "aff1##aff2##aff3"}```。 
+	
+	例如，获取ID为 ‘1156615’ 的论文和ID为 ‘2085584’  的作者 name 和 affiliation 信息：
+	
+	```
+	>>> import json
+	>>> pa_name_aff = json.load(open("paperIdAuthorId_to_name_and_affiliation.json"))
+	>>> pa_name_aff['1156615|2085584']
+	    {u'affiliation': u'Huawei##Microsoft Research Asia', u'name': u'Hang Li##Hang Li'}
+	```
+	
 
 ####3. 提交格式：
 最终提交的的文件为对**“测试集”**的预测结果。预测结果文件的格式与训练集的格式相同，包含AuthorId、ComfirmedPaperIds、DeletedPaperIds 字段。
 
 ####4. 评估标准：
-使用在“测试集”上的准确率Accuracy，作为最后的评估标准。
-
-目前，程序该benchmark程序在Valid数据集上的结果如下：
-
-
-|  分类器	   | Accuracy on Valid set|
-|:-----------|:---------------------| 
-| LogisterRegreation	   | 0.920277		             |     
-| SVM		   | 		          |   
-| KNN		   | 		          |   
+使用在“测试集”上的准确率 **Accuracy**，作为最后的评估标准。
+ 
 
 大家可以尝试不同的算法，目前系统已经实现如下算法：
 

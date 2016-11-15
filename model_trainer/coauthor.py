@@ -51,5 +51,9 @@ def get_top_k_coauthors(paper_author_path, k, to_file):
 
 
 if __name__ == '__main__':
-    get_top_k_coauthors(config.DATASET_PATH+"/PaperAuthor.csv", 10, config.DATA_PATH + "/coauthor.json")
+    k = 10
+    get_top_k_coauthors(
+        os.path.join(config.DATASET_PATH, "PaperAuthor.csv"),
+        k,
+        os.path.join(config.DATA_PATH, "coauthor.json"))
 
