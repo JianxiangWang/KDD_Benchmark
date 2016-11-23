@@ -63,14 +63,19 @@ TEST\_FILE 变量对应的测试文件，抽取特征，并使用在训练集上
 
 >> dataset
 
->>> train_set: 训练集所在文件夹
+>>> train_set: 训练集文件夹
 >>>>* Train.authorIds.txt: 训练集的所有作者列表
 >>>>* Train.csv：训练集
 
->>> valid_set: 验证集所在文件夹
+>>> valid_set: 验证集文件夹
 >>>>* Valid.authorIds.txt: 验证集的所有作者列表
 >>>>* Valid.csv：验证集
 >>>>* Valid.gold.csv：验证集的标准答案
+
+>>> <font color="red">test_set: 测试集文件夹（各个小组不同的测试集）
+>>>>* Test.authorIds.txt: 测试集的所有作者列表
+>>>>* Test.csv：测试集，如Test.01.csv是第一个小组的测试集</font>
+
 
 >>* Author.csv: 作者数据集
 
@@ -104,7 +109,7 @@ TEST\_FILE 变量对应的测试文件，抽取特征，并使用在训练集上
 
 >* stringDistance.py: 获取字符串距离信息
 
->* trainer.py: 模型训练器，**主函数**
+>* trainer.py: 模型训练器，<font color="red" >**主函数** </font>
 
 >predict: 预测结果文件夹
 
@@ -254,17 +259,7 @@ python evalution.py gold_file_path pred_file_path
 ```
 其中，gold\_file\_path 为标准答案所在的路径，pred\_file\_path 为预测文件所在的路径
 
-
-大家可以尝试不同的特征和不同的算法来提升性能，目前系统已经实现如下算法：
-
-* Decision Tree
-* Naive Bayes
-* KNN
-* SVM
-* Logister Regreation
-* Random Forest
-* AdaBoost
-* VotingClassifier（ensemble）
+大家可以尝试不同的特征和不同的算法来提升性能。
  
  
  
@@ -276,37 +271,147 @@ python evalution.py gold_file_path pred_file_path
 | 验证集（Valid.csv）	   | 2,347		          |   
 | 测试集（Test.csv）	   | 每个队伍的测试集不同, 约1,300; |   
 
+## KDD 基准系统的实现思路
+####1. 构造训练／测试样本
 
-## IDEAs
+代码位于 ```model_trainer/data_loader.py``` 中，其中 ```load_train_data(train_path)``` 和 ```load_test_data(test_path)``` 分别为加载训练样本和测试样本的方法。
 
-####1. 字符串距离 
-首先在paperauthor里面是又噪音的，同一个（authorid,paperid）可能出现多次，我做的是把同一个（authorid,paperid）对的多个name和多个affiliation合并起来。例如
+1. 构建训练样本。 系统从 ```data/dataset/train_set/Train.csv```中构建训练集的正负样本。
+	* 将 ```authorId``` 与 ```ConfirmedPaperIds``` 中的每个```paperId``` 组合，作为**正样本**（label为 1）。
+	* 将 ```authorId``` 与 ```DeletedPaperIds``` 中的每个```paperId``` 组合，作为**负样本**（label为 0）。
 
- aid,pid,name1,aff1 <br/>
- aid,pid,name2,aff2 <br/>
- aid,pid,name3,aff3 <br/>
+2. 构建测试样本。系统从 ```data/dataset/valid_set/Valid.csv``` 或 ```data/dataset/test_set/Test.csv`` 中构建测试样本。 由于测试集的类标是待预测的，这里直接将其赋值为 -1。
+
+####2. 构造特征
+
+分别为每一个训练／测试样本抽取特征。特征抽取函数位于 ```model_trainer/feature_functions.py``` 中。 目前实现的特征有：
+
+1. **字符串距离**特征（作者名字和单位相似度特征）
+
+ 首先, ```PaperAuthor.csv```里面是有噪音的，同一个（authorid,paperid）可能出现多次，把同一个（authorid,paperid）对的多个 name 和多个 affiliation 合并起来。例如,
  
-得到aid,pid,name1##name2##name3,aff1##aff2##aff3,“##”为分隔符。由paperauthor里可以知道论文的name和affiliation，另一个方面我们可以根据（authorid,paperid）对中的authorid到author表里找到对应的name和affiliation，假设当前的作者论文对是(aid,pid),从paperauthor里得到的name串和affiliation串分别为name1##name2##name3,aff1##aff2##aff3,根据aid从author表找到的name和affliction分别为name-a，affliction-a，这样我们可以算字符串的距离。
+ ```
+ 	aid,pid,name1,aff1
+ 	aid,pid,name2,aff2
+ 	aid,pid,name3,aff3
+ ``` 
+ 
+ 我们可以得到
 
-算法有两种：
+ ```
+aid,pid,name1##name2##name3,aff1##aff2##aff3  其中，“##”为 分隔符。
+ ```
 
-*  name-a 与,name1##name2##name3的距离，同理affliction-a和,aff1##aff2##aff3的距离
-*  name-a分别与name1，name2，name3的距离，然后取平均，同理affliction-a和,aff1，aff2，aff3的平均距离
-距离的度量：编辑距离（levenshtein distance），最长公共子序列（LCS），最长公共子串（LSS）。
-这样我们就得到关于作者name和作者affiliation的字符串相似度的多个特征。
+ 本系统已经从```PaperAuthor.csv```中为每一个 (aid,pid) 对获取了name1##name2##name3,aff1##aff2##aff3 信息，并保存于 **paperIdAuthorId_to_name_and_affiliation.json** 文件中。另一个方面，我们可以根据（authorid,paperid）对中的 authorid 到```Author.csv```表里找到对应的 name 和 affiliation。
 
-####2. coauthor信息
-很多论文都有多个作者，根据paperauthor统计每一个作者的top 10（当然可以是top 20或者其他top K）的coauthor，对于一个作者论文对（aid，pid），计算ID为pid的论文的作者有没有出现ID为aid的作者的top 10 coauthor中，可以简单计算top 10 coauthor出现的个数，还可以算一个得分，每个出现pid论文的top 10 coauthor可以根据他们跟aid作者的合作次数算一个分数，然后累加。
+ 假设, 当前的作者论文对是(aid,pid), 从 **paperIdAuthorId_to_name_and_affiliation.json** 里得到的 name 串和 affiliation 串分别为 name1##name2##name3, aff1##aff2##aff3, 根据 aid 从 ```Author.csv```表找到的name和affliction分别为 name-a，affliction-a，这样我们可以计算字符串的距离。
 
-####3. journalid，conferenceid，year
-把paper表的journalid，conferenceid和year也作为特征加进去，我的理解journalid和conferenceid可以看做是论文的一个类标签（label），年份year也可以看做是一个label。
+  <u>特征计算方式</u>有两种：
+ 
+ *  name-a 与,name1##name2##name3的距离，同理affliction-a和,aff1##aff2##aff3的距离。对应于 ``` model_trainer/feature_functions.py``` 中的 ``` stringDistance_1() ```  方法。
 
-####4. keyword信息
-作者A写过的论文的keyword构成一个集合X，一篇论文B的keyword构成一个集合Y，这里说的keyword是论文的title和keyword分词后得到的单词，对于一个作者论文对（A，B）计算他们的keyword的交集：X∩Y。
-每个单词可以类似tf-idf的分数，最后把属于X∩Y的单词的分数累加起来作为一维新的特征。
+ *  name-a分别与name1，name2，name3的距离，然后取平均，同理affliction-a和,aff1，aff2，aff3的平均距离。对应于 ``` model_trainer/feature_functions.py``` 中的 ``` stringDistance_2() ```  方法。
 
-####5.其他
-后面做了一下model的ensemble。把knn，svm，sgd分类器，rf随机森林，gbdt，logistic regression，adaboost的结果合并。
+ <u>距离的度量</u>, 目前已经实现以下三种, 代码均位于``` model_trainer/feature_functions.py```中：
+
+ * 编辑距离（levenshtein distance）
+ * 最长公共子序列（LCS）
+ * 最长公共子串（LSS）
+
+
+ 这样, 我们就得到关于作者name和作者affiliation的字符串相似度的多个特征。
+
+2. **共作者**特征（共作者的相似度特征）
+
+ 一篇论文会存在多个作者，根据```PaperAuthor.csv```统计每一个作者的top 10（也可以是top 20或者其他top K）的共作者coauthor。本系统已经从```PaperAuthor.csv```获取了每个作者 top 10 的共作者，保存在 **coauthor.json** 文件中。
+ 
+ 对于一个作者论文对（aid，pid），计算ID为pid的论文的作者有没有出现ID为aid的作者的 top 10 coauthor中，可以有两种计算方式：
+ 
+ * 计算ID为pid的论文的作者在top 10 coauthor出现的个数，作为特征。对应于``` model_trainer/feature_functions.py``` 中的 ``` coauthor_1() ```  方法。
+
+ * 计算ID为pid的论文的作者，在top 10 coauthor中，将他们跟aid作者的合作次数进行累加，将累加后的次数作为特征。``` model_trainer/feature_functions.py``` 中的 ``` coauthor_2() ```
+
+
+####3. 分类器选择
+
+ 分类器的实现代码在```classifier.py```中，每一种分类器，对应于一个类（class）。目前实现的分类器有：
+
+ * Decision Tree
+ * Naive Bayes
+ * KNN
+ * SVM
+ * Logister Regreation
+ * Random Forest
+ * AdaBoost
+ * VotingClassifier（ensemble）
+
+
+###附：
+####1. 特征的添加
+
+   每一个特征的抽取都对应一个特征函数，位于``` model_trainer/feature_functions.py```中。因此，若需要添加一个特征，则在``` model_trainer/feature_functions.py```中增加一个函数，但是<u>必须保证函数的接口</u>不变。
+   
+   如下所示为共作者的特征函数，输入必须是 ``` (AuthorIdPaperId, dict_coauthor, dict_paperIdAuthorId_to_name_aff, PaperAuthor, Author) ``` 这些参数，返回值为<u>特征对象</u>。
+   
+```
+def coauthor_1(AuthorIdPaperId, dict_coauthor, dict_paperIdAuthorId_to_name_aff, PaperAuthor, Author):
+    authorId = AuthorIdPaperId.authorId
+    paperId = AuthorIdPaperId.paperId
+
+    # 从PaperAuthor中，根据paperId找coauthor。
+    curr_coauthors = list(map(str, list(PaperAuthor[PaperAuthor["PaperId"] == int(paperId)]["AuthorId"].values)))
+    #
+    top_coauthors = dict_coauthor[authorId].keys()
+
+    # 简单计算top 10 coauthor出现的个数
+    nums = len(set(curr_coauthors) & set(top_coauthors))
+
+    return util.get_feature_by_list([nums])
+```
+   
+ 添加完特征函数后，可直接在  ```model_trainer/trainer.py```中调用。添加到变量``` feature_function_list ```中即可。如下所示，表示使用 coauthor\_1 和 coauthor\_2 特征来训练模型：
+ 
+```
+''' 特征函数列表 '''
+feature_function_list = [
+    coauthor_1,
+    coauthor_2,
+    # stringDistance_1,
+    # stringDistance_2,
+]
+```
+
+####2. 分类器的添加
+
+所有分类器的实现代码位于```classifier.py```中，每个分类器对应于一个类，并继承于策略（Strategy）类。每个分类器类都需要实现 train\_model （训练模型） 和 test\_model（测试模型）方法。
+
+添加完特征后，可直接在  ```model_trainer/trainer.py```中通过改变 ```classifier ```变量的值来调用，例如 Naive Bayes 分类器的调用：
+
+```
+classifier = Classifier(skLearn_NaiveBayes())
+```
+
+
+
+
+## KDD提供的可能思路
+####1. journal 和 conference 信息
+
+ 可以将作者aid之前发表的论文的journal和conference，与当前的论文pid的journal 和 conference 之间的相似度，作为特征。
+
+
+####2. 论文的 keyword 信息
+ 作者A写过的论文的keyword构成一个集合X，一篇论文B的keyword构成一个集合Y，这里的keyword指的是论文的title和keyword分词后得到的单词，对于一个作者论文对（A，B）计算他们的keyword的交集：X∩Y。
+每个单词可以计算类似于tf-idf的分数，最后把属于X∩Y的单词的分数累加起来作为一维新的特征。
+
+####3. 特征计算方式
+尝试不同的字符串相似度的计算方式。
+
+####4. 模型参数
+尝试调整模型的超参数来提升性能。
+
+####5. 模型选择
+尝试使用不同的模型和 ensemble 的方法来提升性能。
 
 
 
