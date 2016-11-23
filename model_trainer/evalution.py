@@ -97,4 +97,5 @@ if __name__ == '__main__':
     print "##" * 20
     print "    评估结果, 以Accuracy为准"
     print "##" * 20
+    print ""
     cm.print_out()
