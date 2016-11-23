@@ -16,6 +16,7 @@ DATASET_PATH = os.path.join(DATA_PATH, "dataset")
 # 训练和测试文件
 TRAIN_FILE = os.path.join(DATASET_PATH, "train_set", "Train.csv")
 TEST_FILE = os.path.join(DATASET_PATH, "valid_set", "Valid.csv")
+GOLD_FILE = os.path.join(DATASET_PATH, "valid_set", "Valid.gold.csv")
 
 # 模型文件
 MODEL_PATH = os.path.join(CWD, "model", "kdd.model")

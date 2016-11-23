@@ -107,7 +107,7 @@ if __name__ == "__main__":
     get_prediction(config.TEST_FEATURE_PATH, config.TEST_RESULT_PATH, config.TEST_PREDICT_PATH)
 
     ''' 评估,（预测 vs 标准答案）'''
-    gold_file = config.CWD + "/data/dataset/valid_set/Valid.gold.csv"
+    gold_file = config.GOLD_FILE
     pred_file = config.TEST_PREDICT_PATH
     cmd = "python evalution.py %s %s" % (gold_file, pred_file)
     os.system(cmd)
