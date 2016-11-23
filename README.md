@@ -299,7 +299,7 @@ python evalution.py gold_file_path pred_file_path
  我们可以得到
 
  ```
-aid,pid,name1##name2##name3,aff1##aff2##aff3  其中，“##”为 分隔符。
+aid,pid,name1##name2##name3,aff1##aff2##aff3  其中，“##”为分隔符。
  ```
 
  本系统已经从```PaperAuthor.csv```中为每一个 (aid,pid) 对获取了name1##name2##name3,aff1##aff2##aff3 信息，并保存于 **paperIdAuthorId_to_name_and_affiliation.json** 文件中。另一个方面，我们可以根据（authorid,paperid）对中的 authorid 到```Author.csv```表里找到对应的 name 和 affiliation。
