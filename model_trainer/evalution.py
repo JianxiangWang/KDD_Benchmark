@@ -93,4 +93,8 @@ if __name__ == '__main__':
     # accuracy
     acc = cm.get_accuracy()
     # 打印评估结果
+    print ""
+    print "##" * 20
+    print "    评估结果, 以Accuracy为准"
+    print "##" * 20
     cm.print_out()

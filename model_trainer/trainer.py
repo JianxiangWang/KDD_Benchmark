@@ -57,8 +57,8 @@ if __name__ == "__main__":
     feature_function_list = [
         coauthor_1,
         coauthor_2,
-        stringDistance_1,
-        stringDistance_2,
+        # stringDistance_1,
+        # stringDistance_2,
     ]
 
     ''' 分类器 '''
