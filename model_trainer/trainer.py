@@ -57,16 +57,17 @@ if __name__ == "__main__":
     feature_function_list = [
         coauthor_1,
         coauthor_2,
-        # stringDistance_1,
-        # stringDistance_2,
+        stringDistance_1,
+        stringDistance_2,
     ]
+
 
     ''' 分类器 '''
     # 决策树，NB，
     # classifier = Classifier(skLearn_DecisionTree())
-    classifier = Classifier(skLearn_NaiveBayes())
+    # classifier = Classifier(skLearn_NaiveBayes())
     # classifier = Classifier(skLearn_svm())
-    # classifier = Classifier(skLearn_lr())
+    classifier = Classifier(skLearn_lr())
     # classifier = Classifier(skLearn_KNN())
     # classifier = Classifier(sklearn_RandomForestClassifier())
     # classifier = Classifier(skLearn_AdaBoostClassifier())

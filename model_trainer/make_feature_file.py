@@ -1,5 +1,5 @@
 #encoding: utf-8
-# import pyprind
+import pyprind
 import util
 from example import Example
 
@@ -8,9 +8,9 @@ def Make_feature_file(authorIdPaperIds, dict_coauthor, dict_paperIdAuthorId_to_n
     example_list = []
     dimension = 0
 
-    # process_bar = pyprind.ProgPercent(len(authorIdPaperIds))
+    process_bar = pyprind.ProgPercent(len(authorIdPaperIds))
     for authorIdPaperId in authorIdPaperIds:
-        # process_bar.update()
+        process_bar.update()
 
         features = [feature_function(authorIdPaperId, dict_coauthor, dict_paperIdAuthorId_to_name_aff, PaperAuthor, Author) for feature_function in feature_function_list]
         #合并特征
